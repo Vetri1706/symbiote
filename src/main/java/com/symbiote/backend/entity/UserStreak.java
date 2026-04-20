@@ -1,0 +1,31 @@
+package com.symbiote.backend.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "user_streak")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserStreak {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private Long userId;
+
+    @Column(nullable = false)
+    private int currentStreak;
+
+    @Column(nullable = false)
+    private int longestStreak;
+
+    @Column(nullable = false)
+    private LocalDate lastActivityDate;
+}

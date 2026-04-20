@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@theme {
+  --color-violet-50:  #e3f1ed;
+  --color-violet-100: #bce0d5;
+  --color-violet-200: #93cebd;
+  --color-violet-300: #6ab79e;
+  --color-violet-400: #54a58b;
+  --color-violet-500: #3f9078;
+  --color-violet-600: #2b6f5a;
+  --color-violet-700: #1b493a;
+  --color-violet-800: #0e2920;
+
+  --color-sidebar-bg:  #111111;
+  --color-sidebar-hover: #1e1e1e;
+  --color-sidebar-text: #9ca3af;
+  --color-sidebar-active: #ffffff;
+
+  --color-surface: #ffffff;
+  --color-bg:      #f9fafb;
+
+  --color-neutral-50:  #f9fafb;
+  --color-neutral-100: #f3f4f6;
+  --color-neutral-200: #e5e7eb;
+  --color-neutral-300: #d1d5db;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-500: #6b7280;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1f2937;
+  --color-neutral-900: #111827;
+
+  --color-success-500: #22c55e;
+  --color-warning-500: #f59e0b;
+  --color-danger-500:  #ef4444;
+
+  --font-sans: 'Inter', sans-serif;
+  --radius-card: 16px;
+}
+
+@layer base {
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+  body {
+    background-color: #f9fafb;
+    color: #1f2937;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
