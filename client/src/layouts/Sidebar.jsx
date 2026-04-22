@@ -5,6 +5,7 @@ import {
   Triangle, AlertCircle, Star, Heart, BarChart3, Bot, Settings,
   LogOut, ChevronRight
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const mainMenu = [
   { name: 'Dashboard',       path: '/',               icon: LayoutDashboard },
@@ -78,6 +79,14 @@ function NavItem({ item }) {
 }
 
 export default function Sidebar() {
+  const { user, logout } = useAuth();
+
+  const filteredSections = sections.filter(section => {
+    if (section.label === 'Admin') return user?.role === 'ADMIN';
+    if (section.label === 'Intelligence') return user?.role === 'ADMIN';
+    return true;
+  });
+
   return (
     <nav className="
       group/sidebar fixed top-0 left-0 h-screen
@@ -87,24 +96,24 @@ export default function Sidebar() {
     ">
       {/* Brand */}
       <div className="h-24 flex items-center px-[22px] flex-shrink-0">
-        <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center text-gray-900 font-black text-sm flex-shrink-0 shadow-[0_0_15px_rgba(32,166,132,0.3)]">
-          A
+        <div className="w-10 h-10 rounded-2xl bg-violet-600 flex items-center justify-center text-white font-black text-xs flex-shrink-0 shadow-lg shadow-violet-600/20">
+          S
         </div>
-        <span className={`ml-0 group-hover/sidebar:ml-3 font-bold text-[20px] text-white tracking-wide ${textCls}`}>
-          Adapto<span className="text-violet-500">AI</span>
+        <span className={`ml-0 group-hover/sidebar:ml-4 font-black text-[18px] text-white tracking-widest uppercase italic ${textCls}`}>
+          Symbiote
         </span>
       </div>
 
       {/* Nav */}
-      <div className="flex-1 overflow-y-auto pt-2 pb-4 scrollbar-hide space-y-4">
-        {sections.map((section) => (
+      <div className="flex-1 overflow-y-auto pt-2 pb-4 scrollbar-hide space-y-6">
+        {filteredSections.map((section) => (
           <div key={section.label} className="mb-2">
-            <div className="px-0 group-hover/sidebar:px-5 overflow-hidden max-h-0 group-hover/sidebar:max-h-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] mb-1 flex items-center">
-              <span className={`text-[10px] font-bold tracking-wider text-gray-400 uppercase ${textCls}`}>
+            <div className="px-0 group-hover/sidebar:px-6 overflow-hidden max-h-0 group-hover/sidebar:max-h-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] mb-2 flex items-center">
+              <span className={`text-[10px] font-black tracking-[0.2em] text-zinc-600 uppercase italic ${textCls}`}>
                 {section.label}
               </span>
             </div>
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {section.items.map(item => <NavItem key={item.name} item={item} />)}
             </div>
           </div>
@@ -112,18 +121,15 @@ export default function Sidebar() {
       </div>
 
       {/* Bottom */}
-      <div className="px-4 py-4 flex-shrink-0">
+      <div className="px-4 py-6 flex-shrink-0 border-t border-white/5">
         <div className="px-2 space-y-1">
-          <button className="flex items-center w-full px-2 py-2 rounded-xl text-gray-500 hover:text-gray-300 hover:bg-[#1a1a1a] transition-colors">
-            <Settings className="w-5 h-5 flex-shrink-0" />
-            <div className="overflow-hidden flex-1 ml-0 group-hover/sidebar:ml-4 text-left transition-all duration-300">
-              <span className={`text-sm font-semibold ${textCls}`}>Help & Info</span>
-            </div>
-          </button>
-          <button className="flex items-center w-full px-2 py-2 rounded-xl text-gray-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
-            <LogOut className="w-5 h-5 flex-shrink-0" />
-            <div className="overflow-hidden flex-1 ml-0 group-hover/sidebar:ml-4 text-left transition-all duration-300">
-              <span className={`text-sm font-semibold ${textCls}`}>Log out</span>
+          <button 
+            onClick={logout}
+            className="flex items-center w-full px-4 py-3 rounded-2xl text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-all group/logout"
+          >
+            <LogOut className="w-5 h-5 flex-shrink-0 group-hover/logout:scale-110 transition-transform" />
+            <div className="overflow-hidden flex-1 ml-4 text-left transition-all duration-300">
+              <span className={`text-sm font-black uppercase tracking-widest italic ${textCls}`}>Abort Session</span>
             </div>
           </button>
         </div>

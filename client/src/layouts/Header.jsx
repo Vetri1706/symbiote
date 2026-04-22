@@ -1,34 +1,48 @@
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search, LogOut, User as UserIcon } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Header() {
+  const { user, logout } = useAuth();
+
   return (
-    <header className="h-16 bg-[#0a0a0a] border-b border-white/5 flex items-center justify-between px-8 shrink-0 z-10 shadow-md">
-      <h1 className="text-[17px] font-medium text-white tracking-wide">Dashboard</h1>
+    <header className="h-20 bg-[#030303] border-b border-white/5 flex items-center justify-between px-8 shrink-0 z-10 shadow-2xl">
+      <div className="flex flex-col">
+        <h1 className="text-xl font-black text-white tracking-tight">Intelligence Dashboard</h1>
+        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-0.5">Secure Session Active</p>
+      </div>
 
-      <div className="flex items-center gap-5">
-        {/* Company toggle */}
-        <div className="flex items-center gap-2 text-xs text-gray-400 font-medium">
-          Company
-          <div className="w-9 h-5 bg-[#222] rounded-full relative cursor-pointer border border-white/10">
-            <div className="absolute right-0.5 top-0.5 w-3.5 h-3.5 bg-violet-500 rounded-full shadow-md" />
-          </div>
-        </div>
-
+      <div className="flex items-center gap-6">
         {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500" />
+        <div className="relative group hidden md:block">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-violet-500 transition-colors" />
           <input
             type="text"
-            className="bg-[#111111] border border-white/5 text-gray-200 text-xs rounded-full pl-9 pr-4 py-2 w-56 outline-none focus:ring-1 focus:ring-violet-500 focus:border-violet-500 transition-all placeholder:text-gray-600 shadow-inner"
-            placeholder="Search..."
+            className="bg-[#0a0a0a] border border-white/5 text-zinc-200 text-xs rounded-2xl pl-11 pr-4 py-2.5 w-64 outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/20 transition-all placeholder:text-zinc-700 font-medium"
+            placeholder="Search Intelligence..."
           />
         </div>
 
-        {/* Bell */}
-        <button className="relative p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/5">
-          <Bell className="w-[18px] h-[18px]" />
-          <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-violet-500 rounded-full" />
-        </button>
+        {/* User Profile */}
+        <div className="flex items-center gap-4 pl-6 border-l border-white/5">
+           <div className="text-right hidden sm:block">
+              <p className="text-sm font-black text-white leading-none">{user?.name}</p>
+              <p className="text-[10px] font-bold text-violet-500 uppercase tracking-tighter mt-1">{user?.role}</p>
+           </div>
+           
+           <div className="relative group">
+              <div className="w-10 h-10 rounded-2xl bg-violet-600/10 border border-violet-600/20 flex items-center justify-center text-violet-500 group-hover:bg-violet-600 group-hover:text-white transition-all cursor-pointer">
+                 <UserIcon className="w-5 h-5" />
+              </div>
+           </div>
+
+           <button 
+             onClick={logout}
+             className="w-10 h-10 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-zinc-500 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/20 transition-all"
+             title="Logout"
+           >
+             <LogOut className="w-5 h-5" />
+           </button>
+        </div>
       </div>
     </header>
   );
