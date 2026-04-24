@@ -18,6 +18,7 @@ import Achievements from './pages/Achievements';
 import Challenges from './pages/Challenges';
 
 // Admin Pages
+// Updated: 2026-04-24 - Environment Sync
 import AdminJira from './pages/AdminJira';
 
 function App() {
