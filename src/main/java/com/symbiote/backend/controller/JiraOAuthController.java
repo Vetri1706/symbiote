@@ -96,14 +96,21 @@ public class JiraOAuthController {
     }
 
     @GetMapping("/callback")
-    public RedirectView callback(@RequestParam String code, @RequestParam String state) {
-        // Verify signed state and extract userId
-        Long userId = jwtUtil.getUserIdFromStateToken(state);
-
-        jiraOAuthService.exchangeCodeForUserToken(userId, code);
-        
-        // Redirect back to frontend dashboard
-        return new RedirectView(appConfig.getFrontendUrl() + "/dashboard");
+    public Object callback(@RequestParam String state, @RequestParam String code) {
+        log.info("Received callback from Jira with state and code");
+        try {
+            Long userId = jwtUtil.getUserIdFromStateToken(state);
+            log.info("Processing callback for user ID: {}", userId);
+            
+            jiraOAuthService.exchangeCodeForUserToken(userId, code);
+            log.info("Successfully connected Jira account for user ID: {}", userId);
+            
+            return new RedirectView(appConfig.getFrontendUrl() + "/dashboard");
+        } catch (Exception e) {
+            log.error("Jira OAuth callback failed: {}", e.getMessage(), e);
+            // Instead of a 500 error, redirect to dashboard with an error parameter
+            return new RedirectView(appConfig.getFrontendUrl() + "/dashboard?error=jira_connection_failed&message=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
+        }
     }
 
     @GetMapping("/status")

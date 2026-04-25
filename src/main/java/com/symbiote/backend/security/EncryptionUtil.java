@@ -14,10 +14,10 @@ public class EncryptionUtil {
     private static final String ALGORITHM = "AES/GCM/NoPadding";
     private static final int TAG_LENGTH_BIT = 128;
     private static final int IV_LENGTH_BYTE = 12;
-    private final String key;
+    private final byte[] keyBytes;
 
     public EncryptionUtil(@Value("${symbiote.security.token-encryption-key}") String key) {
-        this.key = key;
+        this.keyBytes = Base64.getDecoder().decode(key);
     }
 
     public String encrypt(String strToEncrypt) {
@@ -25,7 +25,7 @@ public class EncryptionUtil {
             byte[] iv = new byte[IV_LENGTH_BYTE];
             new java.security.SecureRandom().nextBytes(iv);
             
-            SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
+            SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, new javax.crypto.spec.GCMParameterSpec(TAG_LENGTH_BIT, iv));
             
@@ -49,7 +49,7 @@ public class EncryptionUtil {
             byte[] ciphertext = new byte[combined.length - iv.length];
             System.arraycopy(combined, iv.length, ciphertext, 0, ciphertext.length);
             
-            SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
+            SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new javax.crypto.spec.GCMParameterSpec(TAG_LENGTH_BIT, iv));
             
