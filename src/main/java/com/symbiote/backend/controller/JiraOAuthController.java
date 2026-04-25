@@ -6,6 +6,7 @@ import com.symbiote.backend.entity.User;
 import com.symbiote.backend.repository.UserRepository;
 import com.symbiote.backend.security.JwtUtil;
 import com.symbiote.backend.service.JiraOAuthService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,16 @@ public class JiraOAuthController {
     private final JwtUtil jwtUtil;
     private final JiraConfig jiraConfig;
     private final SymbioteAppConfig appConfig;
+
+    @PostConstruct
+    public void init() {
+        log.info("JiraOAuthController initialized");
+    }
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("pong");
+    }
 
     @GetMapping("/authorize-url")
     public ResponseEntity<?> getAuthorizeUrl() {
