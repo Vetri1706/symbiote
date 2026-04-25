@@ -7,6 +7,7 @@ import com.symbiote.backend.repository.UserRepository;
 import com.symbiote.backend.security.JwtUtil;
 import com.symbiote.backend.service.JiraOAuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/jira/oauth")
 @RequiredArgsConstructor
+@Slf4j
 public class JiraOAuthController {
 
     private final JiraOAuthService jiraOAuthService;
@@ -28,14 +30,39 @@ public class JiraOAuthController {
     private final SymbioteAppConfig appConfig;
 
     @GetMapping("/authorize-url")
-    public ResponseEntity<Map<String, String>> getAuthorizeUrl() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public ResponseEntity<?> getAuthorizeUrl() {
+        log.info("Request to generate Jira Auth URL");
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            log.debug("Current user email: {}", email);
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + email));
 
-        String state = jwtUtil.generateStateToken(user.getId());
-        String url = buildAuthUrl(state);
-        return ResponseEntity.ok(Map.of("url", url));
+            validateConfig();
+
+            String state = jwtUtil.generateStateToken(user.getId());
+            String url = buildAuthUrl(state);
+            log.info("Successfully generated Jira Auth URL");
+            return ResponseEntity.ok(Map.of("url", url));
+        } catch (Exception e) {
+            log.error("Failed to generate Jira Auth URL: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "URL_GENERATION_FAILED",
+                "message", e.getMessage()
+            ));
+        }
+    }
+
+    private void validateConfig() {
+        if (jiraConfig.getClientId() == null || jiraConfig.getClientId().isBlank()) {
+            throw new IllegalStateException("Jira Client ID is missing");
+        }
+        if (jiraConfig.getAuthUrl() == null || jiraConfig.getAuthUrl().isBlank()) {
+            throw new IllegalStateException("Jira Auth URL is missing");
+        }
+        if (jiraConfig.getRedirectUri() == null || jiraConfig.getRedirectUri().isBlank()) {
+            throw new IllegalStateException("Jira Redirect URI is missing");
+        }
     }
 
     @GetMapping("/start")
@@ -49,7 +76,15 @@ public class JiraOAuthController {
     }
 
     private String buildAuthUrl(String state) {
-        String scopes = "read:jira-work read:jira-user offline_access";
+        String scopes = jiraConfig.getScopes();
+        if (scopes == null) {
+            scopes = "read:jira-work write:jira-work offline_access";
+        }
+        // Strip quotes if present (common in .env files)
+        if (scopes.startsWith("\"") && scopes.endsWith("\"")) {
+            scopes = scopes.substring(1, scopes.length() - 1);
+        }
+
         return String.format(
                 "%s/authorize?audience=api.atlassian.com&client_id=%s&scope=%s&redirect_uri=%s&state=%s&response_type=code&prompt=consent",
                 jiraConfig.getAuthUrl(),

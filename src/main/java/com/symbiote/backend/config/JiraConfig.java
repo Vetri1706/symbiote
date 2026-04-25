@@ -18,4 +18,5 @@ public class JiraConfig {
     private String webhookBaseUrl;
     private String clientId;
     private String clientSecret;
+    private String scopes;
 }
