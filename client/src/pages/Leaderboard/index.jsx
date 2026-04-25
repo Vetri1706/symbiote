@@ -136,7 +136,7 @@ function RiskIndicator({ type }) {
 }
 
 function Avatar({ name, size = 'md', idx = 0 }) {
-  const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  const initials = name ? name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '??';
   const sz = size === 'lg' ? 'w-20 h-20 text-2xl border-4' : size === 'md' ? 'w-14 h-14 text-base border-4' : 'w-10 h-10 text-sm border-2';
   const isDark = size !== 'sm';
   return (
@@ -229,7 +229,7 @@ export default function Leaderboard() {
             <h2 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-4">Your Intelligence Insights</h2>
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-5xl font-black">#{me.id + 1}</p>
+                <p className="text-5xl font-black">#{me ? me.id + 1 : '--'}</p>
                 <p className="text-sm font-bold opacity-80 mt-1 uppercase tracking-widest">Global Rank</p>
               </div>
               <div className="text-right">

@@ -144,14 +144,14 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         const [statsData, tasksData, lbData, jiraData] = await Promise.all([
-          apiClient('/users/me/stats'),
+          apiClient('/users/me/stats').catch(() => ({ currentXp: 0, weeklyXp: 0, rank: '--', tasksCompleted: 0, activeTasks: 0 })),
           apiClient('/tasks/my').catch(() => []),
-          apiClient('/leaderboard/top10'),
+          apiClient('/leaderboard/top10').catch(() => []),
           apiClient('/jira/oauth/status').catch(() => ({ connected: false }))
         ]);
         setStats(statsData);
         setTasks(Array.isArray(tasksData) ? tasksData : []);
-        setLeaderboard(lbData);
+        setLeaderboard(Array.isArray(lbData) ? lbData : []);
         setJiraStatus(jiraData);
       } catch (err) {
         console.error('Failed to fetch dashboard data', err);
