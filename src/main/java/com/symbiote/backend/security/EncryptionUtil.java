@@ -21,6 +21,7 @@ public class EncryptionUtil {
     }
 
     public String encrypt(String strToEncrypt) {
+        if (strToEncrypt == null) return null;
         try {
             byte[] iv = new byte[IV_LENGTH_BYTE];
             new java.security.SecureRandom().nextBytes(iv);
@@ -41,6 +42,7 @@ public class EncryptionUtil {
     }
 
     public String decrypt(String strToDecrypt) {
+        if (strToDecrypt == null) return null;
         try {
             byte[] combined = Base64.getDecoder().decode(strToDecrypt);
             byte[] iv = new byte[IV_LENGTH_BYTE];

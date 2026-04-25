@@ -107,9 +107,10 @@ public class JiraOAuthController {
             
             return new RedirectView(appConfig.getFrontendUrl() + "/dashboard");
         } catch (Exception e) {
-            log.error("Jira OAuth callback failed: {}", e.getMessage(), e);
+            log.error("Jira OAuth callback failed", e);
+            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
             // Instead of a 500 error, redirect to dashboard with an error parameter
-            return new RedirectView(appConfig.getFrontendUrl() + "/dashboard?error=jira_connection_failed&message=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8));
+            return new RedirectView(appConfig.getFrontendUrl() + "/dashboard?error=jira_connection_failed&message=" + URLEncoder.encode(errorMsg, StandardCharsets.UTF_8));
         }
     }
 
