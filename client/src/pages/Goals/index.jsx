@@ -2,17 +2,21 @@ import { useState, useEffect } from 'react';
 import { Card } from '../../components/ui';
 import { Target, CheckCircle2 } from 'lucide-react';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Goals() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await api.get('/tasks', { params: { userId: 3 } });
-        if (response.data.success) {
-          setTasks(response.data.tasks);
+        const response = await api('/tasks');
+        if (response && Array.isArray(response)) {
+          setTasks(response);
+        } else if (response && response.tasks) {
+          setTasks(response.tasks);
         } else {
           loadFallbackTasks();
         }
@@ -38,7 +42,7 @@ export default function Goals() {
 
   const handleComplete = async (taskId) => {
     try {
-      await api.post('/task/complete', { taskId, userId: 3 });
+      await api('/task/complete', { method: 'POST', body: JSON.stringify({ taskId }) });
       // Remove it from frontend view immediately
       setTasks(tasks.filter(t => t.id !== taskId));
     } catch (err) {

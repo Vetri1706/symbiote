@@ -16,6 +16,7 @@ import Analytics from './pages/Analytics';
 import Wallet from './pages/Wallet';
 import Achievements from './pages/Achievements';
 import Challenges from './pages/Challenges';
+import Goals from './pages/Goals';
 
 // Admin Pages
 // Updated: 2026-04-24 - Environment Sync
@@ -40,6 +41,7 @@ function App() {
             <Route path="wallet" element={<Wallet />} />
             <Route path="achievements" element={<Achievements />} />
             <Route path="challenges" element={<Challenges />} />
+            <Route path="goals" element={<Goals />} />
           </Route>
         </Route>
 

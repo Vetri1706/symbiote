@@ -22,7 +22,7 @@ export default function AdminJira() {
 
   const fetchStatus = async () => {
     try {
-      const { data } = await api.get('/admin/jira/status');
+      const data = await api('/admin/jira/status');
       setStatus({ loading: false, data });
     } catch {
       setStatus({ loading: false, data: { connected: false } });
@@ -32,7 +32,7 @@ export default function AdminJira() {
   const fetchMappings = async () => {
     setMappings(m => ({ ...m, loading: true }));
     try {
-      const { data } = await api.get('/admin/mappings');
+      const data = await api('/admin/mappings');
       setMappings({ loading: false, data });
     } catch {
       setMappings({ loading: false, data: [] });
@@ -42,7 +42,7 @@ export default function AdminJira() {
   const fetchUnmapped = async () => {
     setUnmapped(u => ({ ...u, loading: true }));
     try {
-      const { data } = await api.get('/admin/mappings/unmapped');
+      const data = await api('/admin/mappings/unmapped');
       setUnmapped({ loading: false, data });
     } catch {
       setUnmapped({ loading: false, data: [] });
@@ -51,7 +51,7 @@ export default function AdminJira() {
 
   const onSaveMapping = async () => {
     try {
-      await api.post('/admin/mappings', manualMapping);
+      await api('/admin/mappings', { method: 'POST', body: JSON.stringify(manualMapping) });
       alert("Identity Resolved & Mapped Successfully!");
       fetchMappings();
       setSelectedMappingUser(null);
@@ -63,7 +63,7 @@ export default function AdminJira() {
   const fetchProjects = async () => {
     setProjects(p => ({ ...p, loading: true }));
     try {
-      const { data } = await api.get('/admin/jira/projects');
+      const data = await api('/admin/jira/projects');
       setProjects({ loading: false, data: Array.isArray(data) ? data : [] });
     } catch {
       setProjects({ loading: false, data: [] });
@@ -73,7 +73,7 @@ export default function AdminJira() {
   const fetchUsers = async () => {
     setUsers(u => ({ ...u, loading: true }));
     try {
-      const { data } = await api.get('/admin/jira/users');
+      const data = await api('/admin/jira/users');
       setUsers({ loading: false, data: Array.isArray(data) ? data : [] });
     } catch {
       setUsers({ loading: false, data: [] });
@@ -84,19 +84,22 @@ export default function AdminJira() {
     e.preventDefault();
     try {
       setSubmitStatus('Submitting...');
-      await api.post('/admin/jira/tasks', {
-        fields: {
-          project: { key: form.projectKey },
-          summary: form.title,
-          description: "Gamified task via SYMBIOTE",
-          issuetype: { name: "Task" },
-          assignee: form.assigneeId ? { accountId: form.assigneeId } : null
-        }
+      await api('/admin/jira/tasks', {
+        method: 'POST',
+        body: JSON.stringify({
+          fields: {
+            project: { key: form.projectKey },
+            summary: form.title,
+            description: "Gamified task via SYMBIOTE",
+            issuetype: { name: "Task" },
+            assignee: form.assigneeId ? { accountId: form.assigneeId } : null
+          }
+        })
       });
       setSubmitStatus('Task Created Successfully!');
       setForm({ title: '', projectKey: '', assigneeId: '' });
     } catch (err) {
-      setSubmitStatus('Failed: ' + (err?.response?.data?.message || 'Check Jira permissions'));
+      setSubmitStatus('Failed: ' + (err?.message || 'Check Jira permissions'));
     }
   };
 
@@ -126,7 +129,7 @@ export default function AdminJira() {
   const fetchXpRules = async () => {
     setXpRules(r => ({ ...r, loading: true }));
     try {
-      const { data } = await api.get('/admin/xp-rules');
+      const data = await api('/admin/xp-rules');
       setXpRules({ loading: false, data });
     } catch {
       setXpRules({ loading: false, data: [] });
@@ -135,7 +138,7 @@ export default function AdminJira() {
 
   const updateXpRule = async (id, points) => {
     try {
-      await api.put(`/admin/xp-rules/${id}`, { points: parseInt(points) });
+      await api(`/admin/xp-rules/${id}`, { method: 'PUT', body: JSON.stringify({ points: parseInt(points) }) });
       fetchXpRules();
     } catch (err) {
       alert("Failed to update rule");
@@ -212,7 +215,7 @@ export default function AdminJira() {
                   <button 
                     onClick={async () => {
                       try {
-                        const { data } = await api.get('/jira/oauth/authorize-url');
+                        const data = await api('/jira/oauth/authorize-url');
                         window.location.href = data.url;
                       } catch (err) {
                         alert('Could not generate Jira Auth URL');

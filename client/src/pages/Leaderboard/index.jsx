@@ -184,10 +184,11 @@ export default function Leaderboard() {
       };
     };
 
+
     const load = async () => {
       try {
-        const response = await api.get('/leaderboard');
-        const entries = Array.isArray(response.data) ? response.data : [];
+        const response = await api('/leaderboard');
+        const entries = Array.isArray(response) ? response : [];
         if (entries.length) {
           setUsers(entries.map(normalize));
         } else {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Flame, Shield, Snowflake, History, Clock, HelpCircle, Activity, Target, AlertTriangle, ChevronRight } from 'lucide-react';
 import { Card } from '../../components/ui';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 // Sub-components
 import StreakCalendar from '../../components/streak/StreakCalendar';
@@ -10,9 +11,10 @@ import StreakMilestones from '../../components/streak/StreakMilestones';
 import StreakInsights from '../../components/streak/StreakInsights';
 
 export default function Streaks() {
+  const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const userId = 3; // Hardcoded for demo consistency
+  const userId = user?.id; 
 
   useEffect(() => {
     fetchStreakData();
@@ -34,9 +36,10 @@ export default function Streaks() {
    };
 
    const fetchStreakData = async () => {
+      if (!userId) return;
       try {
-         const response = await api.get(`/streak/${userId}`);
-         const streak = response.data;
+         const response = await api(`/streak/${userId}`);
+         const streak = response;
          if (streak) {
             setData({
                user_id: streak.userId,
@@ -54,7 +57,7 @@ export default function Streaks() {
 
    const handleUseFreeze = async () => {
       try {
-          await api.post(`/streak/update/${userId}`);
+          await api(`/streak/update/${userId}`, { method: 'POST' });
           fetchStreakData();
       } catch (e) { console.error(e); }
    };
