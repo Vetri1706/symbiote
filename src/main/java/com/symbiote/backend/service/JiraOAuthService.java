@@ -105,26 +105,36 @@ public class JiraOAuthService {
                 "redirect_uri", jiraConfig.getRedirectUri()
         );
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, body, Map.class);
+            log.info("Exchanging code for token at: {}", tokenUrl);
+            ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, new HttpEntity<>(body, headers), Map.class);
             Map<?, ?> responseBody = response.getBody();
             
             if (responseBody == null || !responseBody.containsKey("access_token")) {
+                log.error("Token response missing access_token. Body: {}", responseBody);
                 throw new IllegalStateException("Invalid token response from Atlassian");
             }
 
+            log.info("Successfully received access token from Atlassian");
             String accessToken = (String) responseBody.get("access_token");
             String refreshToken = (String) responseBody.get("refresh_token");
             Integer expiresIn = (Integer) responseBody.get("expires_in");
 
             // 1. Fetch Cloud ID
+            log.info("Fetching accessible sites...");
             Map<String, String> site = fetchAccessibleSite(accessToken);
             String cloudId = site.get("id");
+            log.info("Found Cloud ID: {}", cloudId);
 
             // 2. Fetch Jira Account Info (myself)
+            log.info("Fetching Jira profile info...");
             Map<String, String> profile = fetchJiraProfile(accessToken, cloudId);
             String jiraAccountId = profile.get("accountId");
             String displayName = profile.get("displayName");
+            log.info("Successfully identified Jira user: {} ({})", displayName, jiraAccountId);
 
             // 3. Upsert Connection
             JiraUserConnection connection = connectionRepository.findByUserId(userId)
