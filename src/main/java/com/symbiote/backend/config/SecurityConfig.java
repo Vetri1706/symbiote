@@ -69,7 +69,8 @@ public class SecurityConfig {
             configuration.setAllowedOriginPatterns(List.of(
                 frontendUrl,
                 frontendUrl.endsWith("/") ? frontendUrl.substring(0, frontendUrl.length() - 1) : frontendUrl + "/",
-                "https://*.azurestaticapps.net"
+                "https://*.azurestaticapps.net",
+                "https://*.pages.dev"
             ));
         } else {
             configuration.setAllowedOriginPatterns(List.of("*"));
